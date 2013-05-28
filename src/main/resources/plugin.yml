@@ -1,0 +1,5 @@
+name: SnowDrift
+main: com.mikeprimm.bukkit.SnowDrift.SnowDrift
+version: "${project.version}"
+author: mikeprimm
+

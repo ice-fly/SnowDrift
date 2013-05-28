@@ -1,0 +1,66 @@
+# SnowDrift configuration
+#
+# Settings are by biome (based on org.bukkit.block.Biome enum)
+#   melt-snow-by-sky-light-N: list of percent chance of melting snow, by sky light level (N = 0-15): if undefined, zero assumed
+#   check-new-snow-for-melt: if true, newly fallen snow should be checked for melting by sky light
+#   wind-direction: NORTH, NORTH_EAST, EAST, SOUTH_EAST, SOUTH, SOUTH_WEST, WEST, NORTH_WEST (direction for drifting - wind FROM this direction)
+#   drift-downhill: percent chance that snow will drift downhill (into lower adjacent block)
+#   drift-uphill: percent change that snow will drift uphill (one block above adjacent block)
+#   drift-accumulate-X: list of percent changes of drifting into block with snow, based on height difference of snow (X is '8-less' to '0-less' to 8-more')
+#           if undefined, uses nearest setting)
+#   diagonal-drift: percent chance of drifting 45 degrees to left or right of wind direction (equal chance of either)
+# Settings in areas override settings from biome, but still only apply to biomes defined above
+#   (that is, blocks inside the area, but not matching one of the biome-section biomes are not processed)
+# World processing settings: controls overall processing: settings per world
+#   chunks-per-tick: number of chunks processed per tick
+#   block-per-chunk: number of blocks checked per chunk
+#   min-tick-interval: minimum period between ticking the same chunks (every (min-tick-interval * tick-period / 20) seconds)
+# General settings:
+#   tick-period: Tick between processing ticks
+#   world-env: which world environments to process (NORMAL is typically only type with snow)
+biome:
+  TUNDRA:
+    melt-snow-by-sky-light-15: 50 
+    melt-snow-by-sky-light-14: 25 
+    check-new-snow-for-melt: true
+    wind-direction: "NORTH_WEST"
+    check-new-snow-for-drift: true
+    drift-downhill: 50
+    drift-uphill: 0
+    drift-accumulate-1-less: 50
+    drift-accumulate-0-less: 25
+    drift-accumulate-1-more: 10
+    diagonal-drift: 25
+  TAIGA:
+    melt-snow-by-sky-light-15: 50 
+    melt-snow-by-sky-light-14: 25 
+    check-new-snow-for-melt: true
+    wind-direction: "NORTH_WEST"
+    check-new-snow-for-drift: true
+    drift-downhill: 50
+    drift-uphill: 0
+    drift-accumulate-1-less: 50
+    drift-accumulate-0-less: 25
+    drift-accumulate-1-more: 10
+    diagonal-drift: 25
+area:
+  - name: area_1
+    enabled: false
+    world: world
+    corners:
+      - x: 0
+        z: 0
+      - x: 100
+        z: 100
+    wind-direction: "NORTH"
+general:
+  tick-period: 1
+  world-env: [ "NORMAL" ]
+  chunks-per-tick: 20
+  blocks-per-chunk: 10
+  min-tick-interval: 300
+worlds:
+  SomeRandomWorld:
+    chunks-per-tick: 20
+    blocks-per-chunk: 10
+  
