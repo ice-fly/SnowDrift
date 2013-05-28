@@ -228,8 +228,12 @@ public class WorldProcessingRec {
     }
     private boolean canPlaceSnowOn(SnowDrift drift, Block b) {
         Material m = b.getType();
-        if ((m == Material.LEAVES) || (m.isSolid() && m.isOccluding()))
-            return true;
+        if ((m == Material.LEAVES) || (m.isSolid() && m.isOccluding())) {
+            if (drift.blockSnowForm.get(m.getId()))
+                return false;
+            else
+                return true;
+        }
         else
             return false;
     }

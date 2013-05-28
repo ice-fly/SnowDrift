@@ -1,6 +1,8 @@
 package com.mikeprimm.bukkit.SnowDrift;
 
+import java.util.BitSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -40,6 +42,7 @@ public class SnowDrift extends JavaPlugin {
     public final BlockFace[] driftDirectionStraight;
     public final BlockFace[] driftDirectionLeft;
     public final BlockFace[] driftDirectionRight;
+    public BitSet blockSnowForm = new BitSet();
 
     public SnowDrift() {
         /* Build drift direction table */
@@ -124,8 +127,12 @@ public class SnowDrift extends JavaPlugin {
                 worldenv[i] = World.Environment.valueOf(env.get(i));
             }
         }
-        for (int x = 0; x < worldenv.length; x++) {
-            log.info("worldEnv[" + x + "]=" + worldenv[x]);
+        List<Integer> blk = cfg.getIntegerList("general.block-snow-form");
+        if (blk != null) {
+            blockSnowForm.clear();
+            for (Integer in : blk) {
+                blockSnowForm.set(in);
+            }
         }
         /* Initialize loaded worlds */
         for (World w : this.getServer().getWorlds()) {
@@ -170,6 +177,25 @@ public class SnowDrift extends JavaPlugin {
                     }
                 },
                 tick_period, tick_period);
+        
+        if (blockSnowForm.isEmpty() == false) {
+            /* Add listener for form events */
+            Listener bfl = new Listener() {
+                @EventHandler(priority=EventPriority.NORMAL)
+                public void onBlockForm(BlockFormEvent evt) {
+                    if (evt.isCancelled()) return;
+                    BlockState bs = evt.getNewState();
+                    if (bs.getTypeId() == snowID) { // If snow form
+                        Block b = evt.getBlock().getRelative(BlockFace.DOWN);
+                        if ((b != null) && (blockSnowForm.get(b.getTypeId()))) {
+                            evt.setCancelled(true);
+                        }
+                    }
+                }
+            };
+            getServer().getPluginManager().registerEvents(bfl, this);
+
+        }
     }
     
     private void processTick() {

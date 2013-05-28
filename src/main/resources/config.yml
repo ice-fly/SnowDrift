@@ -59,6 +59,7 @@ general:
   chunks-per-tick: 20
   blocks-per-chunk: 10
   min-tick-interval: 300
+  block-snow-form: [ 3, 4, 13 ]
 worlds:
   SomeRandomWorld:
     chunks-per-tick: 20
