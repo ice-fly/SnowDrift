@@ -8,6 +8,7 @@ public class ConfigRec {
     public boolean checkNewForMelt;
     public boolean checkNewForDrift;
     public BlockFace windDirection;
+    public float driftUpwindBlock;
     public float driftDownhill;
     public float driftUphill;
     public float driftAccumulateDown[];
@@ -24,6 +25,7 @@ public class ConfigRec {
         String dir = cs.getString("wind-direction", "NORTH_WEST");
         windDirection = BlockFace.valueOf(dir.toUpperCase());
         if (windDirection == null) windDirection = BlockFace.NORTH_WEST;
+        driftUpwindBlock = (float)cs.getDouble("drift-upwind-block", 0.0);
         driftDownhill = (float)cs.getDouble("drift-downhill", 0.0);
         driftUphill = (float)cs.getDouble("drift-uphill", 0.0);
         driftAccumulateDown = new float[9];

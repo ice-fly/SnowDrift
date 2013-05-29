@@ -39,10 +39,12 @@ public class SnowDrift extends JavaPlugin {
     public int blocksPerChunk;
     public int minTickInterval;
     public final int snowID = Material.SNOW.getId();
+    public final int iceID = Material.ICE.getId();
     public final BlockFace[] driftDirectionStraight;
     public final BlockFace[] driftDirectionLeft;
     public final BlockFace[] driftDirectionRight;
     public BitSet blockSnowForm = new BitSet();
+    public boolean blockIceForm;
 
     public SnowDrift() {
         /* Build drift direction table */
@@ -134,6 +136,7 @@ public class SnowDrift extends JavaPlugin {
                 blockSnowForm.set(in);
             }
         }
+        blockIceForm = cfg.getBoolean("general.block-ice-form", false);
         /* Initialize loaded worlds */
         for (World w : this.getServer().getWorlds()) {
             if (isProcessedWorld(w)) {
@@ -178,16 +181,22 @@ public class SnowDrift extends JavaPlugin {
                 },
                 tick_period, tick_period);
         
-        if (blockSnowForm.isEmpty() == false) {
+        if ((blockSnowForm.isEmpty() == false) || blockIceForm) {
             /* Add listener for form events */
             Listener bfl = new Listener() {
                 @EventHandler(priority=EventPriority.NORMAL)
                 public void onBlockForm(BlockFormEvent evt) {
                     if (evt.isCancelled()) return;
                     BlockState bs = evt.getNewState();
-                    if (bs.getTypeId() == snowID) { // If snow form
+                    int id = bs.getTypeId();
+                    if (id == snowID) { // If snow form
                         Block b = evt.getBlock().getRelative(BlockFace.DOWN);
                         if ((b != null) && (blockSnowForm.get(b.getTypeId()))) {
+                            evt.setCancelled(true);
+                        }
+                    }
+                    else if (id == iceID) { // If ice form
+                        if (blockIceForm) {
                             evt.setCancelled(true);
                         }
                     }

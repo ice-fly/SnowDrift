@@ -4,6 +4,7 @@
 #   melt-snow-by-sky-light-N: list of percent chance of melting snow, by sky light level (N = 0-15): if undefined, zero assumed
 #   check-new-snow-for-melt: if true, newly fallen snow should be checked for melting by sky light
 #   wind-direction: NORTH, NORTH_EAST, EAST, SOUTH_EAST, SOUTH, SOUTH_WEST, WEST, NORTH_WEST (direction for drifting - wind FROM this direction)
+#   drift-upwind-block: percent change of drifting when solid block is upwind
 #   drift-downhill: percent chance that snow will drift downhill (into lower adjacent block)
 #   drift-uphill: percent change that snow will drift uphill (one block above adjacent block)
 #   drift-accumulate-X: list of percent changes of drifting into block with snow, based on height difference of snow (X is '8-less' to '0-less' to 8-more')
@@ -20,15 +21,16 @@
 #   world-env: which world environments to process (NORMAL is typically only type with snow)
 biome:
   TUNDRA:
-    melt-snow-by-sky-light-15: 50 
-    melt-snow-by-sky-light-14: 25 
+    melt-snow-by-sky-light-15: 5 
+    melt-snow-by-sky-light-14: 0 
     check-new-snow-for-melt: true
     wind-direction: "NORTH_WEST"
     check-new-snow-for-drift: true
-    drift-downhill: 50
-    drift-uphill: 0
-    drift-accumulate-1-less: 50
-    drift-accumulate-0-less: 25
+    drift-upwind-block: 50
+    drift-downhill: 25
+    drift-uphill: 10
+    drift-accumulate-1-less: 25
+    drift-accumulate-0-less: 15
     drift-accumulate-1-more: 10
     diagonal-drift: 25
   TAIGA:
@@ -39,6 +41,7 @@ biome:
     check-new-snow-for-drift: true
     drift-downhill: 50
     drift-uphill: 0
+    drift-upwind-block: 50
     drift-accumulate-1-less: 50
     drift-accumulate-0-less: 25
     drift-accumulate-1-more: 10
@@ -59,7 +62,8 @@ general:
   chunks-per-tick: 20
   blocks-per-chunk: 10
   min-tick-interval: 300
-  block-snow-form: [ 3, 4, 13 ]
+  block-snow-form: [ 43, 4, 13 ]
+  block-ice-form: true
 worlds:
   SomeRandomWorld:
     chunks-per-tick: 20

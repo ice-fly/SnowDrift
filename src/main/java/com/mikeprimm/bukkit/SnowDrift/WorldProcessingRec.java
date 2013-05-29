@@ -19,6 +19,7 @@ public class WorldProcessingRec {
     private int blocksPerChunk;
     private int minTickInterval;
     private int intervalCnt;
+    private int loadedNeighbors;    // 2 bits per neighbor at 2*((xoff+1)*3 + (zoff+1)) : 01=unchecked, 01=loaded, 10=unloaded
     
     private static final int BIGPRIME = 15485867;
     private Random rnd = new Random();
@@ -85,6 +86,7 @@ public class WorldProcessingRec {
         }
     }
     private void tickChunk(SnowDrift drift, int x0, int z0) {
+        loadedNeighbors = 0; // Reset loaded neightbox chunk cache
         for (int i = 0; i < blocksPerChunk; i++) {
             int x = rnd.nextInt(16);
             int z = rnd.nextInt(16);
@@ -105,7 +107,6 @@ public class WorldProcessingRec {
         }
     }
     private void processSnow(SnowDrift drift, ConfigRec cr, int x, int y, int z, Block b) {
-        Chunk c;
         // Check for melting
         float prob = cr.meltSnowBySky[b.getLightFromSky()];
         if ((prob > 0.0) && ((100.0 * rnd.nextFloat()) < prob)) {
@@ -113,8 +114,40 @@ public class WorldProcessingRec {
             //drift.log.info("processSnow(" + world.getName() + "," + x + "," + y + "," + z + ") - melted");
             return;
         }
+        int h0 = b.getData() + 1;   // Get snow height
         // Get potential drift direction
         BlockFace driftdir = cr.getDriftDir(drift, rnd.nextFloat());
+        // See if chunk we're drifting to is loaded - quit if no
+        int dx = x + driftdir.getModX();
+        int dz = z + driftdir.getModZ();
+        if (checkNeighborLoaded(x, z, dx, dz) == false) {
+            return;
+        }
+        // If upwind block chance
+        if (cr.driftUpwindBlock > 0.0) {
+            // See if upwind is loaded too
+            int upx = x - driftdir.getModX();
+            int upz = z - driftdir.getModZ();
+            if (checkNeighborLoaded(x, z, upx, upz) == false) {
+                return;
+            }
+            Block upblk = b.getRelative(driftdir.getOppositeFace());
+            if (upblk == null) return;
+            Material m = upblk.getType();
+            // If snow, and higher than us
+            if (((m == Material.SNOW) && ((upblk.getData() + 1) > h0))) {
+                // See if blocked drift
+                if ((100.0 * rnd.nextFloat()) < cr.driftUpwindBlock) {
+                    return;
+                }
+            }
+            else if (m.isSolid()) {
+                // See if blocked drift
+                if ((100.0 * rnd.nextFloat()) < cr.driftUpwindBlock) {
+                    return;
+                }
+            }
+        }
         // Check for block in direction
         Block nxtblk = b.getRelative(driftdir);
         if (nxtblk == null) return;
@@ -141,7 +174,6 @@ public class WorldProcessingRec {
             }
         }
         else if (nxttype == drift.snowID) { // Accumulation drift?
-            int h0 = b.getData() + 1;
             int h1 = nxtblk.getData() + 1;  // Get snow heights
             prob = 0.0F;
             if (h0 >= h1) {  // Source higher than destination 
@@ -186,7 +218,6 @@ public class WorldProcessingRec {
                 }
             }
             else {  // Else, drifting sideways
-                int h0 = b.getData() + 1;
                 prob = cr.driftAccumulateDown[h0];
                 if ((prob > 0.0) && ((100.0 * rnd.nextFloat()) < prob)) { // If drifting?
                     // Drift out - quit if cancelled
@@ -236,5 +267,24 @@ public class WorldProcessingRec {
         }
         else
             return false;
+    }
+    private boolean checkNeighborLoaded(int x, int z, int xoff, int zoff) {
+        int cx = ((x+xoff) >> 4);
+        int cz = ((z+zoff) >> 4);
+        x = x >> 4;
+        z = z >> 4;
+        if ((x == cx) && (z == cz)) return true;
+        int off = 3*(cx - x + 1) + (cz - z + 1);
+        int v = (loadedNeighbors >> (2*off)) & 0x3;
+        if (v == 0) {   // Untested
+            if (world.isChunkLoaded(cx, cz)) {
+                v = 1;
+            }
+            else {
+                v = 2;
+            }
+            loadedNeighbors |= v << (off*2);
+        }
+        return (v == 1);
     }
 }
