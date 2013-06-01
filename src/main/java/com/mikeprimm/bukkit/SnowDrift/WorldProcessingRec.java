@@ -105,7 +105,7 @@ public class WorldProcessingRec {
         for (BlockCoord bc : blocksToDo) {
             // Get chunk to tick : confirm all neighbor are loaded
             boolean loaded = true;
-            for (int xx = (bc.x - 1) >> 4; loaded && (xx <= (bc.z + 1) >> 4); xx++) {
+            for (int xx = (bc.x - 1) >> 4; loaded && (xx <= (bc.x + 1) >> 4); xx++) {
                 for (int zz = (bc.z - 1) >> 4; loaded && (zz <= (bc.z + 1) >> 4); zz++) {
                     if (world.isChunkLoaded(xx, zz) == false) {
                         loaded = false;
@@ -154,7 +154,7 @@ public class WorldProcessingRec {
         if (newblk && (!cr.checkNewForDrift))
             return;
         
-        int h0 = b.getData() + 1;   // Get snow height
+        int h0 = b.getData() & 0x7;   // Get snow height (0-7)
         // Get potential drift direction
         BlockFace driftdir = cr.getDriftDir(drift, rnd.nextFloat());
         // If upwind block chance
@@ -163,7 +163,7 @@ public class WorldProcessingRec {
             if (upblk == null) return;
             Material m = upblk.getType();
             // If snow, and higher than us
-            if (((m == Material.SNOW) && ((upblk.getData() + 1) > h0))) {
+            if (((m == Material.SNOW) && (upblk.getData() > h0))) {
                 // See if blocked drift
                 if ((100.0 * rnd.nextFloat()) < cr.driftUpwindBlock) {
                     return;
@@ -202,7 +202,7 @@ public class WorldProcessingRec {
             }
         }
         else if (nxttype == drift.snowID) { // Accumulation drift?
-            int h1 = nxtblk.getData() + 1;  // Get snow heights
+            int h1 = nxtblk.getData() & 0x7;  // Get snow heights
             prob = 0.0F;
             if (h0 >= h1) {  // Source higher than destination 
                 prob = cr.driftAccumulateDown[h0 - h1];
@@ -212,7 +212,7 @@ public class WorldProcessingRec {
             }
             if ((prob > 0.0) && ((100.0 * rnd.nextFloat()) < prob)) { // If drifting?
                 // Drift out - quit if cancelled
-                if (!driftOut(drift, b, h0)) {
+                if (!driftOut(drift, b)) {
                     return; // If cancelled, no drift
                 }
             }
@@ -237,7 +237,7 @@ public class WorldProcessingRec {
             if (dropped) {
                 if ((cr.driftDownhill > 0.0) && ((100.0 * rnd.nextFloat()) < cr.driftDownhill)) {
                     // Drift out - quit if cancelled
-                    if (!driftOut(drift, b, b.getData() + 1)) {
+                    if (!driftOut(drift, b)) {
                         return; // If cancelled, no drift
                     }
                 }
@@ -246,10 +246,10 @@ public class WorldProcessingRec {
                 }
             }
             else {  // Else, drifting sideways
-                prob = cr.driftAccumulateDown[h0];
+                prob = cr.driftAccumulateDown[h0+1];
                 if ((prob > 0.0) && ((100.0 * rnd.nextFloat()) < prob)) { // If drifting?
                     // Drift out - quit if cancelled
-                    if (!driftOut(drift, b, h0)) {
+                    if (!driftOut(drift, b)) {
                         return; // If cancelled, no drift
                     }
                 }
@@ -265,8 +265,8 @@ public class WorldProcessingRec {
         }
         if (nxtblk.getTypeId() == drift.snowID) {   // If adding to existing snow
             byte dat = nxtblk.getData();
-            if (dat < 7) {
-                nxtblk.setData((byte)(dat+ 1)); // Just add it
+            if ((dat & 0x7) < 7) {
+                nxtblk.setData((byte)(dat + 1)); // Just add it
             }
         }
         else {  // Else, new snow block
@@ -274,14 +274,15 @@ public class WorldProcessingRec {
         }
         //drift.log.info("processSnow(" + world.getName() + "," + nxtblk.getX() + "," + nxtblk.getY() + "," + nxtblk.getZ() + ") - drift in");
     }
-    private boolean driftOut(SnowDrift drift, Block b, int prevheight) {
-        if (prevheight <= 1) {
+    private boolean driftOut(SnowDrift drift, Block b) {
+        int prev = b.getData();
+        if ((prev & 0x7) == 0) {
             if (!drift.doSnowFade(world, b.getX(), b.getY(), b.getZ())) {
                 return false;
             }
         }
         else {  // Else, reduce snow
-            b.setData((byte)prevheight);
+            b.setData((byte)(prev - 1));
         }
         return true;
     }
