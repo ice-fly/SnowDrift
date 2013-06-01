@@ -19,13 +19,18 @@ public class WorldProcessingRec {
     private int blocksPerChunk;
     private int minTickInterval;
     private int intervalCnt;
-    private int loadedNeighbors;    // 2 bits per neighbor at 2*((xoff+1)*3 + (zoff+1)) : 01=unchecked, 01=loaded, 10=unloaded
+    private ArrayList<BlockCoord> blocksToDo = new ArrayList<BlockCoord>();
     
     private static final int BIGPRIME = 15485867;
     private Random rnd = new Random();
 
     private static class ChunkCoord {
         int x, z;
+    }
+    
+    private static class BlockCoord {
+        int x, y, z;
+        ConfigRec cr;
     }
     
     public WorldProcessingRec(SnowDrift drift, ConfigurationSection cs, World w) {
@@ -43,6 +48,15 @@ public class WorldProcessingRec {
     }
     
     public void processBlockForm(SnowDrift sd, BlockState bs) {
+        ConfigRec cr = sd.getConfigForCoord(world, bs.getX(), bs.getZ());
+        if ((cr != null) && ((cr.checkNewForDrift) || cr.checkNewForMelt)) {
+            BlockCoord bc = new BlockCoord();
+            bc.x = bs.getX();
+            bc.y = bs.getY();
+            bc.z = bs.getZ();
+            bc.cr = cr;
+            blocksToDo.add(bc);
+        }
     }
     
     public void processTick(SnowDrift drift) {
@@ -59,7 +73,7 @@ public class WorldProcessingRec {
                     return;
                 }
                 chunksToDo.clear();
-                int ord = BIGPRIME % cnt;
+                int ord = (BIGPRIME + rnd.nextInt(cnt)) % cnt;
                 for (int j = 0; j < chunks.length; j++) {
                     if (chunks[ord] != null) {
                         ChunkCoord cc = new ChunkCoord();
@@ -68,9 +82,6 @@ public class WorldProcessingRec {
                         chunksToDo.add(cc);
                         chunks[ord] = null;
                     }
-                    else {
-                        drift.log.info("Did skip");
-                    }
                     ord = (ord + BIGPRIME) % cnt;
                 }
                 index = chunksToDo.size();
@@ -78,15 +89,37 @@ public class WorldProcessingRec {
             // Get next chunk coord
             index--;
             ChunkCoord coord = chunksToDo.get(index);
-            // Get chunk to tick
-            if (!world.isChunkLoaded(coord.x,  coord.z)) {
-                continue;
+            // Get chunk to tick : confirm all neighbor are loaded
+            boolean loaded = true;
+            for (int xx = coord.x - 1; loaded && (xx <= coord.x + 1); xx++) {
+                for (int zz = coord.z - 1; loaded && (zz <= coord.z + 1); zz++) {
+                    if (world.isChunkLoaded(xx, zz) == false) {
+                        loaded = false;
+                    }
+                }
             }
-            tickChunk(drift, coord.x << 4, coord.z << 4);
+            if (loaded)
+                tickChunk(drift, coord.x << 4, coord.z << 4);
         }
+        // Process any pending blocks
+        for (BlockCoord bc : blocksToDo) {
+            // Get chunk to tick : confirm all neighbor are loaded
+            boolean loaded = true;
+            for (int xx = (bc.x - 1) >> 4; loaded && (xx <= (bc.z + 1) >> 4); xx++) {
+                for (int zz = (bc.z - 1) >> 4; loaded && (zz <= (bc.z + 1) >> 4); zz++) {
+                    if (world.isChunkLoaded(xx, zz) == false) {
+                        loaded = false;
+                    }
+                }
+            }
+            if (loaded) {
+                Block b = world.getBlockAt(bc.x, bc.y, bc.z);
+                processSnow(drift, bc.cr, bc.x, bc.y, bc.z, b, true);
+            }
+        }
+        blocksToDo.clear();
     }
     private void tickChunk(SnowDrift drift, int x0, int z0) {
-        loadedNeighbors = 0; // Reset loaded neightbox chunk cache
         for (int i = 0; i < blocksPerChunk; i++) {
             int x = rnd.nextInt(16);
             int z = rnd.nextInt(16);
@@ -102,35 +135,30 @@ public class WorldProcessingRec {
             }
             if (type == drift.snowID) { // Found snow - process it
                 Block b = world.getBlockAt(x0+x, y, z0+z);
-                processSnow(drift, cr, x0+x, y, z0+z, b);
+                processSnow(drift, cr, x0+x, y, z0+z, b, false);
             }
         }
     }
-    private void processSnow(SnowDrift drift, ConfigRec cr, int x, int y, int z, Block b) {
-        // Check for melting
-        float prob = cr.meltSnowBySky[b.getLightFromSky()];
-        if ((prob > 0.0) && ((100.0 * rnd.nextFloat()) < prob)) {
-            drift.doSnowFade(world, x, y, z);
-            //drift.log.info("processSnow(" + world.getName() + "," + x + "," + y + "," + z + ") - melted");
-            return;
+    private void processSnow(SnowDrift drift, ConfigRec cr, int x, int y, int z, Block b, boolean newblk) {
+        float prob;
+        // Check for melting (if not new OR set to check new for melting)
+        if ((!newblk) || (cr.checkNewForMelt)) {
+            prob = cr.meltSnowBySky[b.getLightFromSky()];
+            if ((prob > 0.0) && ((100.0 * rnd.nextFloat()) < prob)) {
+                drift.doSnowFade(world, x, y, z);
+                //drift.log.info("processSnow(" + world.getName() + "," + x + "," + y + "," + z + ") - melted");
+                return;
+            }
         }
+        // If new and we don't check for drifing, quit here
+        if (newblk && (!cr.checkNewForDrift))
+            return;
+        
         int h0 = b.getData() + 1;   // Get snow height
         // Get potential drift direction
         BlockFace driftdir = cr.getDriftDir(drift, rnd.nextFloat());
-        // See if chunk we're drifting to is loaded - quit if no
-        int dx = x + driftdir.getModX();
-        int dz = z + driftdir.getModZ();
-        if (checkNeighborLoaded(x, z, dx, dz) == false) {
-            return;
-        }
         // If upwind block chance
         if (cr.driftUpwindBlock > 0.0) {
-            // See if upwind is loaded too
-            int upx = x - driftdir.getModX();
-            int upz = z - driftdir.getModZ();
-            if (checkNeighborLoaded(x, z, upx, upz) == false) {
-                return;
-            }
             Block upblk = b.getRelative(driftdir.getOppositeFace());
             if (upblk == null) return;
             Material m = upblk.getType();
@@ -267,24 +295,5 @@ public class WorldProcessingRec {
         }
         else
             return false;
-    }
-    private boolean checkNeighborLoaded(int x, int z, int xoff, int zoff) {
-        int cx = ((x+xoff) >> 4);
-        int cz = ((z+zoff) >> 4);
-        x = x >> 4;
-        z = z >> 4;
-        if ((x == cx) && (z == cz)) return true;
-        int off = 3*(cx - x + 1) + (cz - z + 1);
-        int v = (loadedNeighbors >> (2*off)) & 0x3;
-        if (v == 0) {   // Untested
-            if (world.isChunkLoaded(cx, cz)) {
-                v = 1;
-            }
-            else {
-                v = 2;
-            }
-            loadedNeighbors |= v << (off*2);
-        }
-        return (v == 1);
     }
 }
