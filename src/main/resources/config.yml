@@ -12,40 +12,315 @@
 #   diagonal-drift: percent chance of drifting 45 degrees to left or right of wind direction (equal chance of either)
 # Settings in areas override settings from biome, but still only apply to biomes defined above
 #   (that is, blocks inside the area, but not matching one of the biome-section biomes are not processed)
-# World processing settings: controls overall processing: settings per world
-#   chunks-per-tick: number of chunks processed per tick
-#   block-per-chunk: number of blocks checked per chunk
-#   min-tick-interval: minimum period between ticking the same chunks (every (min-tick-interval * tick-period / 20) seconds)
-# General settings:
-#   tick-period: Tick between processing ticks
-#   world-env: which world environments to process (NORMAL is typically only type with snow)
 biome:
-  TUNDRA:
-    melt-snow-by-sky-light-15: 5 
-    melt-snow-by-sky-light-14: 0 
+# Biomes not normally snowy, but should experience dustings
+  GIANT_SPRUCE_TAIGA_HILLS:
+    melt-snow-by-sky-light-15: 46
+    melt-snow-by-sky-light-14: 22
+    melt-snow-by-sky-light-13: 10
+    melt-snow-by-sky-light-12: 4
     check-new-snow-for-melt: true
-    wind-direction: "NORTH_WEST"
+    wind-direction: NORTH_WEST
     check-new-snow-for-drift: true
-    drift-upwind-block: 50
-    drift-downhill: 25
-    drift-uphill: 10
+    drift-upwind-block: 5
+    drift-downhill: 15
+    drift-uphill: 5
     drift-accumulate-1-less: 25
     drift-accumulate-0-less: 15
     drift-accumulate-1-more: 10
-    diagonal-drift: 25
-  TAIGA:
-    melt-snow-by-sky-light-15: 50 
-    melt-snow-by-sky-light-14: 25 
+    diagonal-drift: 15
+  GIANT_TREE_TAIGA_HILLS:
+    melt-snow-by-sky-light-15: 46
+    melt-snow-by-sky-light-14: 22
+    melt-snow-by-sky-light-13: 10
+    melt-snow-by-sky-light-12: 4
     check-new-snow-for-melt: true
-    wind-direction: "NORTH_WEST"
+    wind-direction: NORTH_WEST
     check-new-snow-for-drift: true
-    drift-downhill: 50
-    drift-uphill: 0
-    drift-upwind-block: 50
-    drift-accumulate-1-less: 50
-    drift-accumulate-0-less: 25
+    drift-upwind-block: 5
+    drift-downhill: 15
+    drift-uphill: 5
+    drift-accumulate-1-less: 25
+    drift-accumulate-0-less: 15
     drift-accumulate-1-more: 10
-    diagonal-drift: 25
+    diagonal-drift: 15
+  GRAVELLY_MOUNTAINS:
+    melt-snow-by-sky-light-15: 46
+    melt-snow-by-sky-light-14: 22
+    melt-snow-by-sky-light-13: 10
+    melt-snow-by-sky-light-12: 4
+    check-new-snow-for-melt: true
+    wind-direction: NORTH_WEST
+    check-new-snow-for-drift: true
+    drift-upwind-block: 5
+    drift-downhill: 15
+    drift-uphill: 5
+    drift-accumulate-1-less: 25
+    drift-accumulate-0-less: 15
+    drift-accumulate-1-more: 10
+    diagonal-drift: 15
+  MODIFIED_GRAVELLY_MOUNTAINS:
+    melt-snow-by-sky-light-15: 46
+    melt-snow-by-sky-light-14: 22
+    melt-snow-by-sky-light-13: 10
+    melt-snow-by-sky-light-12: 4
+    check-new-snow-for-melt: true
+    wind-direction: NORTH_WEST
+    check-new-snow-for-drift: true
+    drift-upwind-block: 5
+    drift-downhill: 15
+    drift-uphill: 5
+    drift-accumulate-1-less: 25
+    drift-accumulate-0-less: 15
+    drift-accumulate-1-more: 10
+    diagonal-drift: 15
+  MOUNTAIN_EDGE:
+    melt-snow-by-sky-light-15: 46
+    melt-snow-by-sky-light-14: 22
+    melt-snow-by-sky-light-13: 10
+    melt-snow-by-sky-light-12: 4
+    check-new-snow-for-melt: true
+    wind-direction: NORTH_WEST
+    check-new-snow-for-drift: true
+    drift-upwind-block: 5
+    drift-downhill: 15
+    drift-uphill: 5
+    drift-accumulate-1-less: 25
+    drift-accumulate-0-less: 15
+    drift-accumulate-1-more: 10
+    diagonal-drift: 15
+  MOUNTAINS:
+    melt-snow-by-sky-light-15: 46
+    melt-snow-by-sky-light-14: 22
+    melt-snow-by-sky-light-13: 10
+    melt-snow-by-sky-light-12: 4
+    check-new-snow-for-melt: true
+    wind-direction: NORTH_WEST
+    check-new-snow-for-drift: true
+    drift-upwind-block: 5
+    drift-downhill: 15
+    drift-uphill: 5
+    drift-accumulate-1-less: 25
+    drift-accumulate-0-less: 15
+    drift-accumulate-1-more: 10
+    diagonal-drift: 15
+  TAIGA_HILLS:
+    melt-snow-by-sky-light-15: 46
+    melt-snow-by-sky-light-14: 22
+    melt-snow-by-sky-light-13: 10
+    melt-snow-by-sky-light-12: 4
+    check-new-snow-for-melt: true
+    wind-direction: NORTH_WEST
+    check-new-snow-for-drift: true
+    drift-upwind-block: 5
+    drift-downhill: 15
+    drift-uphill: 5
+    drift-accumulate-1-less: 25
+    drift-accumulate-0-less: 15
+    drift-accumulate-1-more: 10
+    diagonal-drift: 15
+  TAIGA_MOUNTAINS:
+    melt-snow-by-sky-light-15: 46
+    melt-snow-by-sky-light-14: 22
+    melt-snow-by-sky-light-13: 10
+    melt-snow-by-sky-light-12: 4
+    check-new-snow-for-melt: true
+    wind-direction: NORTH_WEST
+    check-new-snow-for-drift: true
+    drift-upwind-block: 5
+    drift-downhill: 15
+    drift-uphill: 5
+    drift-accumulate-1-less: 25
+    drift-accumulate-0-less: 15
+    drift-accumulate-1-more: 10
+    diagonal-drift: 15
+  WOODED_MOUNTAINS:
+    melt-snow-by-sky-light-15: 46
+    melt-snow-by-sky-light-14: 22
+    melt-snow-by-sky-light-13: 10
+    melt-snow-by-sky-light-12: 4
+    check-new-snow-for-melt: true
+    wind-direction: NORTH_WEST
+    check-new-snow-for-drift: true
+    drift-upwind-block: 5
+    drift-downhill: 15
+    drift-uphill: 5
+    drift-accumulate-1-less: 25
+    drift-accumulate-0-less: 15
+    drift-accumulate-1-more: 10
+    diagonal-drift: 15
+
+# Biomes normally snowy that experience accumulation
+  COLD_OCEAN:
+    melt-snow-by-sky-light-15: 8
+    melt-snow-by-sky-light-14: 0
+    check-new-snow-for-melt: true
+    wind-direction: NORTH_WEST
+    check-new-snow-for-drift: true
+    drift-upwind-block: 24
+    drift-downhill: 24
+    drift-uphill: 10
+    drift-accumulate-2-less: 24
+    drift-accumulate-1-less: 32
+    drift-accumulate-0-less: 24
+    drift-accumulate-2-more: 12
+    diagonal-drift: 24
+  DEEP_COLD_OCEAN:
+    melt-snow-by-sky-light-15: 8
+    melt-snow-by-sky-light-14: 0
+    check-new-snow-for-melt: true
+    wind-direction: NORTH_WEST
+    check-new-snow-for-drift: true
+    drift-upwind-block: 24
+    drift-downhill: 24
+    drift-uphill: 10
+    drift-accumulate-2-less: 24
+    drift-accumulate-1-less: 32
+    drift-accumulate-0-less: 24
+    drift-accumulate-2-more: 12
+    diagonal-drift: 24
+  DEEP_FROZEN_OCEAN:
+    melt-snow-by-sky-light-15: 5
+    melt-snow-by-sky-light-14: 0
+    check-new-snow-for-melt: true
+    wind-direction: NORTH_WEST
+    check-new-snow-for-drift: true
+    drift-upwind-block: 24
+    drift-downhill: 24
+    drift-uphill: 10
+    drift-accumulate-2-less: 24
+    drift-accumulate-1-less: 32
+    drift-accumulate-0-less: 24
+    drift-accumulate-2-more: 12
+    diagonal-drift: 24
+  FROZEN_OCEAN:
+    melt-snow-by-sky-light-15: 5
+    melt-snow-by-sky-light-14: 0
+    check-new-snow-for-melt: true
+    wind-direction: NORTH_WEST
+    check-new-snow-for-drift: true
+    drift-upwind-block: 24
+    drift-downhill: 24
+    drift-uphill: 10
+    drift-accumulate-2-less: 24
+    drift-accumulate-1-less: 32
+    drift-accumulate-0-less: 24
+    drift-accumulate-2-more: 12
+    diagonal-drift: 24
+  FROZEN_RIVER:
+    melt-snow-by-sky-light-15: 5
+    melt-snow-by-sky-light-14: 0
+    check-new-snow-for-melt: true
+    wind-direction: NORTH_WEST
+    check-new-snow-for-drift: true
+    drift-upwind-block: 24
+    drift-downhill: 24
+    drift-uphill: 10
+    drift-accumulate-2-less: 24
+    drift-accumulate-1-less: 32
+    drift-accumulate-0-less: 24
+    drift-accumulate-2-more: 12
+    diagonal-drift: 24
+  ICE_SPIKES:
+    melt-snow-by-sky-light-15: 4
+    melt-snow-by-sky-light-14: 0
+    check-new-snow-for-melt: true
+    wind-direction: NORTH_WEST
+    check-new-snow-for-drift: true
+    drift-upwind-block: 24
+    drift-downhill: 12
+    drift-uphill: 24
+    drift-accumulate-2-less: 24
+    drift-accumulate-1-less: 12
+    drift-accumulate-0-less: 12
+    drift-accumulate-2-more: 32
+    diagonal-drift: 24
+  SNOWY_BEACH:
+    melt-snow-by-sky-light-15: 4
+    melt-snow-by-sky-light-14: 0
+    check-new-snow-for-melt: true
+    wind-direction: NORTH_WEST
+    check-new-snow-for-drift: true
+    drift-upwind-block: 24
+    drift-downhill: 24
+    drift-uphill: 12
+    drift-accumulate-2-less: 24
+    drift-accumulate-1-less: 32
+    drift-accumulate-0-less: 24
+    drift-accumulate-2-more: 12
+    diagonal-drift: 24
+  SNOWY_MOUNTAINS:
+    melt-snow-by-sky-light-15: 2
+    melt-snow-by-sky-light-14: 0
+    check-new-snow-for-melt: true
+    wind-direction: NORTH_WEST
+    check-new-snow-for-drift: true
+    drift-upwind-block: 24
+    drift-downhill: 24
+    drift-uphill: 12
+    drift-accumulate-2-less: 24
+    drift-accumulate-1-less: 32
+    drift-accumulate-0-less: 24
+    drift-accumulate-2-more: 12
+    diagonal-drift: 24
+  SNOWY_TAIGA:
+    melt-snow-by-sky-light-15: 4
+    melt-snow-by-sky-light-14: 0
+    check-new-snow-for-melt: true
+    wind-direction: NORTH_WEST
+    check-new-snow-for-drift: true
+    drift-upwind-block: 24
+    drift-downhill: 24
+    drift-uphill: 12
+    drift-accumulate-2-less: 24
+    drift-accumulate-1-less: 32
+    drift-accumulate-0-less: 24
+    drift-accumulate-2-more: 12
+    diagonal-drift: 24
+  SNOWY_TAIGA_HILLS:
+    melt-snow-by-sky-light-15: 2
+    melt-snow-by-sky-light-14: 0
+    check-new-snow-for-melt: true
+    wind-direction: NORTH_WEST
+    check-new-snow-for-drift: true
+    drift-upwind-block: 24
+    drift-downhill: 24
+    drift-uphill: 12
+    drift-accumulate-2-less: 24
+    drift-accumulate-1-less: 32
+    drift-accumulate-0-less: 24
+    drift-accumulate-2-more: 12
+    diagonal-drift: 24
+  SNOWY_TAIGA_MOUNTAINS:
+    melt-snow-by-sky-light-15: 2
+    melt-snow-by-sky-light-14: 0
+    check-new-snow-for-melt: true
+    wind-direction: NORTH_WEST
+    check-new-snow-for-drift: true
+    drift-upwind-block: 24
+    drift-downhill: 24
+    drift-uphill: 12
+    drift-accumulate-2-less: 24
+    drift-accumulate-1-less: 32
+    drift-accumulate-0-less: 24
+    drift-accumulate-2-more: 12
+    diagonal-drift: 24
+  SNOWY_TUNDRA:
+    melt-snow-by-sky-light-15: 4
+    melt-snow-by-sky-light-14: 0
+    check-new-snow-for-melt: true
+    wind-direction: NORTH_WEST
+    check-new-snow-for-drift: true
+    drift-upwind-block: 24
+    drift-downhill: 24
+    drift-uphill: 12
+    drift-accumulate-2-less: 24
+    drift-accumulate-1-less: 32
+    drift-accumulate-0-less: 24
+    drift-accumulate-2-more: 12
+    diagonal-drift: 24
+
+# Areas
 area:
   - name: area_1
     enabled: false
@@ -56,16 +331,23 @@ area:
       - x: 100
         z: 100
     wind-direction: "NORTH"
+
+# World processing settings: controls overall processing: settings per world
+#   chunks-per-tick: number of chunks processed per tick
+#   block-per-chunk: number of blocks checked per chunk
+#   min-tick-interval: minimum period between ticking the same chunks (every (min-tick-interval * tick-period / 20) seconds)
+# General settings:
+#   tick-period: Tick between processing ticks
+#   world-env: which world environments to process (NORMAL is typically only type with snow)
 general:
-  tick-period: 1
+  tick-period: 2
   world-env: [ "NORMAL" ]
-  chunks-per-tick: 20
-  blocks-per-chunk: 10
-  min-tick-interval: 300
-  block-snow-form: [ 43, 4, 13 ]
-  block-ice-form: true
+  chunks-per-tick: 16
+  blocks-per-chunk: 16
+  min-tick-interval: 320
+  block-snow-form: [ 3, 4, 6, 7, 8, 9, 10, 11, 19, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 37, 38, 39, 40, 44, 46, 50, 51, 52, 53, 54, 55, 59, 60, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 74, 75, 76, 77, 81, 83, 84, 85, 87, 88, 89, 90, 91, 92, 93, 94, 96, 97, 99, 100, 101, 102, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 129, 122, 124, 126, 127, 128, 130, 131, 132, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 157, 160, 165, 166, 167, 171, 175, 176, 177, 178, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 205, 207, 208, 209, 210, 211, 213, 214, 215, 217, 255 ]
+  block-ice-form: false
 worlds:
   SomeRandomWorld:
     chunks-per-tick: 20
     blocks-per-chunk: 10
-  
