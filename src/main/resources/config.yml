@@ -13,7 +13,7 @@
 # Settings in areas override settings from biome, but still only apply to biomes defined above
 #   (that is, blocks inside the area, but not matching one of the biome-section biomes are not processed)
 biome:
-# Biomes not normally snowy, but should experience dustings
+# Biomes not normally snowy, but should experience drifting
   GIANT_SPRUCE_TAIGA_HILLS:
     melt-snow-by-sky-light-15: 46
     melt-snow-by-sky-light-14: 22
@@ -343,7 +343,7 @@ general:
   tick-period: 2
   world-env: [ "NORMAL" ]
   chunks-per-tick: 16
-  blocks-per-chunk: 16
+  blocks-per-chunk: 24
   min-tick-interval: 320
   block-snow-form: [ 3, 4, 6, 7, 8, 9, 10, 11, 19, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 37, 38, 39, 40, 44, 46, 50, 51, 52, 53, 54, 55, 59, 60, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 74, 75, 76, 77, 81, 83, 84, 85, 87, 88, 89, 90, 91, 92, 93, 94, 96, 97, 99, 100, 101, 102, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 129, 122, 124, 126, 127, 128, 130, 131, 132, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 157, 160, 165, 166, 167, 171, 175, 176, 177, 178, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 205, 207, 208, 209, 210, 211, 213, 214, 215, 217, 255 ]
   block-ice-form: false
